@@ -1,28 +1,45 @@
-name: NodeJS with Webpack
+name: Deploy Node App
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    branches:
+      - main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x, 22.x]
+  deploy:
+    runs-on: self-hosted
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-    - name: Build
-      run: |
-        npm install
-        npx webpack
+      - name: Install deps
+        run: npm ci
+
+      - name: Build
+        run: npm run build --if-present
+
+      - name: Create release
+        run: |
+          RELEASE=$(date +%Y%m%d%H%M%S)
+          mkdir -p /var/www/cd_sync/releases/$RELEASE
+          rsync -a --delete \
+            --exclude=node_modules \
+            --exclude=.git \
+            ./ /var/www/cd_sync/releases/$RELEASE/
+
+          cd /var/www/myapp
+          ln -sfn releases/$RELEASE current
+
+      - name: Install prod deps
+        run: |
+          cd /var/www/cd_sync/current
+          npm ci --omit=dev
+
+      - name: Restart service
+        run: sudo systemctl restart cd_sync
