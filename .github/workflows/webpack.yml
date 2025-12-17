@@ -30,7 +30,7 @@ jobs:
             --exclude=.git \
             ./ /var/www/cd_sync/releases/$RELEASE/
 
-          cd /var/www/myapp
+          cd /var/www/cd_sync
           ln -sfn releases/$RELEASE current
 
       - name: Install prod deps
