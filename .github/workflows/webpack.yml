@@ -21,9 +21,6 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      - name: Build
-        run: npm run build --if-present
-
       - name: Create release
         run: |
           RELEASE=$(date +%Y%m%d%H%M%S)
