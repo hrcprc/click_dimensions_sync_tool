@@ -1,5 +1,7 @@
 const winston = require('winston');
 const path = require('path');
+const LOG_DIR = process.env.LOG_DIR || '/var/www/cd_sync/shared/logs';
+
 
 const logger = winston.createLogger({
     level: process.env.LOG_LEVEL || 'info',
@@ -11,11 +13,11 @@ const logger = winston.createLogger({
     defaultMeta: { service: 'cd-sync-service' },
     transports: [
         new winston.transports.File({
-            filename: path.join(__dirname, '../../logs/error.log'),
+            filename: path.join(LOG_DIR, 'error.log'),
             level: 'error'
         }),
         new winston.transports.File({
-            filename: path.join(__dirname, '../../logs/combined.log')
+            filename: path.join(LOG_DIR, 'combined.log')
         }),
         new winston.transports.Console({
             format: winston.format.combine(
