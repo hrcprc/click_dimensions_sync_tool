@@ -20,7 +20,7 @@ setInterval(() => {
     syncQueueJob.processForceSyncQueue();
     syncQueueJob.processGotoWebinarRetries();
     syncQueueJob.processZoomRetries();
-}, 5 * 60 * 1000);
+},  30 * 1000);
 
 // Run cleanup daily at midnight
 const setupDailyCleanup = () => {
